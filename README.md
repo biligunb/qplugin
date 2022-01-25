@@ -5,7 +5,7 @@ WordPress plugin for `WooCommerce - Payment Gateway` using [QPay](https://qpay.m
 ## Getting Started
 
 - Install [LocalWP](https://localwp.com/) on your machine
-- Create new site
+  - Create new site
 - Install [WooCommerce](https://woocommerce.com/) plugin & configure
   - Create product
 - Install `QPlugin` zip file
