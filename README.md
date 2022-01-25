@@ -18,27 +18,11 @@
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
+**TODO: ** Explain how to run the automated tests for this system
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+**TODO: ** Add additional notes about how to deploy this on a live system
 
 ## Built With
 
@@ -46,11 +30,11 @@ Add additional notes about how to deploy this on a live system
 
 ## Contributing
 
-Please read [CONTRIBUTING.md]() for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/biligunb/qplugin/tags). 
 
 ## Authors
 
@@ -60,7 +44,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * **Khishigdorj** - *Initial work* - [ekhishigee](https://github.com/ekhishigee)
 * **Munkherdene** - *Initial work* - [moogiikat](https://github.com/moogiikat)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/biligunb/qplugin/contributors) who participated in this project.
 
 ## License
 
