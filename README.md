@@ -1,6 +1,6 @@
 # QPlugin
 
-WordPress plugin for WooCommerce - Payment Gateway using [QPay](https://qpay.mn/)
+WordPress plugin for `WooCommerce - Payment Gateway` using [QPay](https://qpay.mn/)
 
 ## Getting Started
 
