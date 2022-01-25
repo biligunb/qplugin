@@ -1,0 +1,2 @@
+# qpay
+QPay WordPress plugin
