@@ -50,10 +50,10 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## Authors
 
 * **Bilguun** - *Initial work* - [biligunb](https://github.com/biligunb)
-* **Bayarmunkh** - *Initial work* - [biligunb](https://github.com/biligunb)
-* **Boldbaatar** - *Initial work* - [biligunb](https://github.com/biligunb)
-* **Khishigdorj** - *Initial work* - [biligunb](https://github.com/biligunb)
-* **Munkherdene** - *Initial work* - [biligunb](https://github.com/biligunb)
+* **Bayarmunkh** - *Initial work* - [bayarmunkhD](https://github.com/bayarmunkhD)
+* **Boldbaatar** - *Initial work* - [BoldbaatarG](https://github.com/BoldbaatarG)
+* **Khishigdorj** - *Initial work* - [ekhishigee](https://github.com/ekhishigee)
+* **Munkherdene** - *Initial work* - [moogiikat](https://github.com/moogiikat)
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
