@@ -1,6 +1,11 @@
 # QPlugin
 
-WordPress plugin for `WooCommerce - Payment Gateway` using [QPay](https://qpay.mn/)
+> WordPress plugin for `WooCommerce - Payment Gateway` using [QPay](https://qpay.mn/)
+
+- We wanted to enable shops that are built on WordPress to pay easily
+- However there were no readily available WordPress plugin for Mongolian banking gateways or QPay
+  - Some were unreliable (NO official maintenance or downloadable from marketplace), some were too pricey (100k monthly)
+- Thats why we decided to build one ourselves and make it free to use for everyone
 
 ## Getting Started
 
@@ -63,6 +68,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* Kudos to Unimedia Solutions LLC - 2020 Innovator team Munkhtur & Bilguun whose code we used as an example
