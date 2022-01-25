@@ -68,4 +68,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Kudos to [Unimedia Solutions LLC](https://unimedia.mn/) - 2020 Innovator team members Munkhtur & Bilguun whose code we used as an example
+* Kudos to [Unimedia Solutions LLC](https://unimedia.mn/) - 2020 Innovator team members Munkhtur & Bilguun, whose code we used as an example
