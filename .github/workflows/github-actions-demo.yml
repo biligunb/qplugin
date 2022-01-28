@@ -16,3 +16,8 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: Notify via Endid
+        uses: endid-app/endid-github-action@master
+        with:
+          token: ${{ secrets.endid_token }}
+          status: ${{ job.status }}
