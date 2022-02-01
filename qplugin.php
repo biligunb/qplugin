@@ -137,14 +137,14 @@ function qplugin_init_gateway_class() {
 					'title'       => 'Title',
 					'type'        => 'text',
 					'description' => 'This controls the title which the user sees during checkout.',
-					'default'     => 'Credit Card',
+					'default'     => 'Qpay',
 					'desc_tip'    => true,
 				),
 				'description' => array(
 					'title'       => 'Description',
 					'type'        => 'textarea',
 					'description' => 'This controls the description which the user sees during checkout.',
-					'default'     => 'Pay with your credit card via our super-cool payment gateway.',
+					'default'     => 'Pay using QR code (qpay.mn)',
 				),
 				'testmode' => array(
 					'title'       => 'Test mode',
