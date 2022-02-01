@@ -77,6 +77,14 @@ function qplugin_add_gateway_class( $gateways ) {
 	return $gateways;
 }
 
+function debug_to_console($data) {
+    $output = $data;
+    if (is_array($output))
+        $output = implode(',', $output);
+
+    echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
+}
+
 /*
  * The class itself, please note that it is inside plugins_loaded action hook
  */
@@ -191,12 +199,59 @@ function qplugin_init_gateway_class() {
 		/*
 		 * We're processing the payments here
 		 */
-		public function process_payment( $order_id ) { }
+		public function process_payment( $order_id ) {
+			global $woocommerce;
+			// we need it to get order detail
+			$order = wc_get_order($order_id);
+
+			// Mark as pending (we're awaiting the payment)
+			$order->update_status( $this->default_status );
+
+			define( 'WP_DEBUG', true );
+        	$invoice_date = get_the_date( 'Y-m-d H:i:s' ) . '.00'; // "2019-11-29 09:11:03.840"
+
+			$auth_basic_token = '';
+			$array_with_parameters->json_data->invoice_date = $invoice_date; 
+			$array_with_parameters->json_data->invoice_total_amount = $order->get_total();
+
+			$args = array(
+				'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . $this->auth_basic_token ),
+				'body'        => json_encode($array_with_parameters),
+				'method'      => 'POST',
+				'data_format' => 'body',
+			);
+			$response = wp_remote_post($this->get_payment_url(), $args);
+
+			if(!is_wp_error($response)) {
+				$body = json_decode($response['body'], true);
+				debug_to_console($body);
+				$content = 'content';
+
+				$redirect_url = add_query_arg( array('qpay_code' => $content), $order->get_checkout_payment_url( true ) );
+
+				return array(
+					'result' => 'success',
+					'redirect' => apply_filters( 'qpay_process_payment_redirect', $redirect_url, $order )
+				);
+			} else {
+				wc_add_notice('Connection error.', 'error');
+				return;
+			}
+		}
 
 		/*
 		 * In case you need a webhook, like PayPal IPN etc
 		 */
 		public function webhook() { }
+		
+		/**
+		 * Get the payment URL.
+		 *
+		 * @return string.
+		 */
+		protected function get_payment_url() {
+			return 'https://merchant-sandbox.qpay.mn/v2/auth/token';
+		}
  	}
 }
 
