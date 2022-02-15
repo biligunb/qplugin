@@ -78,11 +78,11 @@ function qplugin_add_gateway_class( $gateways ) {
 }
 
 function debug_to_console($data) {
-    $output = $data;
-    if (is_array($output))
-        $output = implode(',', $output);
+  $output = $data;
+  if (is_array($output))
+      $output = implode(',', $output);
 
-    echo "\n$output\n";
+  echo "\n$output\n";
 }
 
 /*
@@ -116,8 +116,8 @@ function qplugin_init_gateway_class() {
       $this->description = $this->get_option( 'description' );
       $this->enabled = $this->get_option( 'enabled' );
       $this->testmode = 'yes' === $this->get_option( 'testmode' );
-      $this->private_key = $this->testmode ? $this->get_option( 'test_private_key' ) : $this->get_option( 'private_key' );
-      $this->publishable_key = $this->testmode ? $this->get_option( 'test_publishable_key' ) : $this->get_option( 'publishable_key' );
+      $this->test_username = $this->testmode ? $this->get_option( 'test_username' ) : $this->get_option( 'username' );
+      $this->test_password = $this->testmode ? $this->get_option( 'test_password' ) : $this->get_option( 'password' );
     
       // This action hook saves the settings
       add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -162,22 +162,22 @@ function qplugin_init_gateway_class() {
           'default'     => 'yes',
           'desc_tip'    => true,
         ),
-        'test_publishable_key' => array(
-          'title'       => 'Test Publishable Key',
+        'test_username' => array(
+          'title'       => 'Test username',
           'type'        => 'text',
           'default'     => 'TEST_MERCHANT'
         ),
-        'test_private_key' => array(
-          'title'       => 'Test Private Key',
-          'type'        => 'password',
+        'test_password' => array(
+          'title'       => 'Test password',
+          'type'        => 'text',
           'default'     => '123456'
         ),
-        'publishable_key' => array(
-          'title'       => 'Live Publishable Key',
+        'username' => array(
+          'title'       => 'Production username',
           'type'        => 'text'
         ),
-        'private_key' => array(
-          'title'       => 'Live Private Key',
+        'password' => array(
+          'title'       => 'Production password',
           'type'        => 'password'
         )
       );
@@ -201,6 +201,11 @@ function qplugin_init_gateway_class() {
       if ( 'no' === $this->enabled ) {
         return;
       }
+      
+      // no reason to continue if followings are not set
+      if ( empty( $this->test_username ) || empty( $this->test_password )) {
+        return;
+      }
     }
 
     /*
@@ -222,24 +227,27 @@ function qplugin_init_gateway_class() {
       define( 'WP_DEBUG', true );
       $invoice_due_date = get_the_date( 'Y-m-d H:i:s' ) . '.00'; // "2019-11-29 09:11:03.840"
 
-      $auth_basic_token = 'VEVTVF9NRVJDSEFOVDoxMjM0NTY=';
-      $array_with_parameters->json_data->sender_invoice_no = '9329873948';
-      $array_with_parameters->json_data->invoice_code = 'TEST_INVOICE';
-      $array_with_parameters->json_data->invoice_receiver_code = 'terminal';
-      $array_with_parameters->json_data->invoice_description = 'Invoice description';
-      // $array_with_parameters->json_data->invoice_due_date = $invoice_due_date;
-      // $array_with_parameters->json_data->lines = array('line_description'=>'Invoice description','line_quantity'=>'1.00', 'line_unit_price'=>$order->get_total());
-      $array_with_parameters->json_data->lines = array (0 => array ('line_description' => 'Invoice description', 'line_quantity' => '1.00', 'line_unit_price' => '2.00' ));
+      $array_with_parameters->sender_invoice_no = '1234567';
+      $array_with_parameters->invoice_code = 'TEST_INVOICE';
+      $array_with_parameters->invoice_receiver_code = 'terminal';
+      $array_with_parameters->invoice_description = 'Invoice description';
+      // $array_with_parameters->invoice_due_date = $invoice_due_date;
+      // $array_with_parameters->lines = array('line_description'=>'Invoice description','line_quantity'=>'1.00', 'line_unit_price'=>$order->get_total());
+      $array_with_parameters->lines = array (0 => array ('line_description' => 'Invoice description', 'line_quantity' => '1.00', 'line_unit_price' => '11.00' ));
+      $array_with_parameters->amount = 10;
 
+      print_r('Auth');  
+      debug_to_console($this->$test_username);
+      debug_to_console($this->$test_password);
       $args = array(
-        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'TEST_MERCHANT:123456' ) ),
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'TEST_MERCHANT' . ':' . '123456' ) ),
         'method'      => 'POST',
         'data_format' => 'body',
       );
       $response = wp_remote_post($this->get_auth_token_url(), $args);
       $body = json_decode($response['body'], true);
-      debug_to_console($body);
       $access_token = $body['access_token'];
+      print_r('Access token');
       debug_to_console($access_token);
 
       $args2 = array(
@@ -248,24 +256,25 @@ function qplugin_init_gateway_class() {
         'method'      => 'POST',
         'data_format' => 'body',
       );
-      debug_to_console($args2);
       $response2 = wp_remote_post($this->get_create_invoice_url(), $args2);
-      $body = json_decode($response2['body'], true);
-      debug_to_console($body);
 
       if(!is_wp_error($response2)) {
-        $body = json_decode($response2['body'], true);
-        debug_to_console($body);
-        $content = 'content';
+        print_r('Response');
+        print_r($response2);
 
-        $redirect_url = add_query_arg( array('qpay_code' => $content), $order->get_checkout_payment_url( true ) );
+        $body = json_decode($response2['body'], true);
+        print_r('Body');
+        debug_to_console($body);
+        $invoiceId = $body['invoice_id'];
+        $qrImage = $body['qr_image'];
+
+        $redirect_url = add_query_arg( array('qpay_code' => $invoiceId), $order->get_checkout_payment_url( true ) );
 
         return array(
           'result' => 'success',
           'redirect' => apply_filters( 'qpay_process_payment_redirect', $redirect_url, $order )
         );
       } else {
-        debug_to_console($response2);
         wc_add_notice('Connection error.', 'error');
         return;
       }
@@ -291,7 +300,7 @@ function qplugin_init_gateway_class() {
      * @return string.
      */
     protected function get_create_invoice_url() {
-		return 'https://merchant-sandbox.qpay.mn/v2/invoice';
+		  return 'https://merchant-sandbox.qpay.mn/v2/invoice';
 	  }
    }
 }
