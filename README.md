@@ -1,4 +1,4 @@
-![](https://github.com/biligunb/qplugin/blob/d33835fb790b1d8b73da62745a7c95e566cfd696/qplugin.gif)
+![](qplugin.gif)
 
 # QPlugin
 
