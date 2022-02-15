@@ -91,10 +91,10 @@ function debug_to_console($data) {
 add_action( 'plugins_loaded', 'qplugin_init_gateway_class' );
 function qplugin_init_gateway_class() {
   class WC_QPlugin_Gateway extends WC_Payment_Gateway {
-     /**
-      * Class constructor
-      */
-     public function __construct() {
+    /**
+     * Class constructor
+     */
+    public function __construct() {
       $this->id = 'qplugin'; // payment gateway plugin ID
       $this->icon = plugin_dir_url( __FILE__ ) . 'public/images/icons/logo_100px.png'; // URL of the icon that will be displayed on checkout page near your gateway name
       $this->has_fields = true; // in case you need a custom credit card form
@@ -126,13 +126,13 @@ function qplugin_init_gateway_class() {
       add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
       
       // You can also register a webhook here
-      // add_action( 'woocommerce_api_{webhook name}', array( $this, 'webhook' ) );
+      add_action( 'woocommerce_api_qplugin', array( $this, 'webhook' ) );
     }
 
     /**
-      * Plugin options
-      */
-     public function init_form_fields(){
+     * Plugin options
+     */
+    public function init_form_fields(){
       $this->form_fields = array(
         'enabled' => array(
           'title'       => 'Enable/Disable',
@@ -188,10 +188,10 @@ function qplugin_init_gateway_class() {
      */
     public function payment_fields() { }
 
-    /*
+    /**
      * Custom CSS and JS, in most cases required only when you decided to go with a custom credit card form
      */
-     public function payment_scripts() {
+    public function payment_scripts() {
       // we need JavaScript to process a token only on cart/checkout pages
       if ( ! is_cart() && ! is_checkout() && ! isset( $_GET['pay_for_order'] ) ) {
         return;
@@ -208,12 +208,12 @@ function qplugin_init_gateway_class() {
       }
     }
 
-    /*
-      * Fields validation
+    /**
+     * Fields validation
      */
     public function validate_fields() { }
 
-    /*
+    /**
      * We're processing the payments here
      */
     public function process_payment( $order_id ) {
@@ -223,6 +223,12 @@ function qplugin_init_gateway_class() {
 
       // Mark as pending (we're awaiting the payment)
       $order->update_status( $this->default_status );
+
+      // Reduce stock levels
+      $order->reduce_order_stock();
+              
+      // Remove cart
+      $woocommerce->cart->empty_cart();
 
       define( 'WP_DEBUG', true );
       $invoice_due_date = get_the_date( 'Y-m-d H:i:s' ) . '.00'; // "2019-11-29 09:11:03.840"
@@ -236,7 +242,7 @@ function qplugin_init_gateway_class() {
       $array_with_parameters->lines = array (0 => array ('line_description' => 'Invoice description', 'line_quantity' => '1.00', 'line_unit_price' => '11.00' ));
       $array_with_parameters->amount = 10;
 
-      print_r('Auth');  
+      print_r('Auth');
       debug_to_console($this->$test_username);
       debug_to_console($this->$test_password);
       $args = array(
@@ -280,11 +286,19 @@ function qplugin_init_gateway_class() {
       }
     }
 
-    /*
+    /**
      * In case you need a webhook, like PayPal IPN etc
      */
-    public function webhook() { }
-    
+    public function webhook() {
+      // $order = wc_get_order( $_GET['id'] );
+      $order = wc_get_order(47);
+      $order->payment_complete();
+      print_r('order');
+      print_r($order);
+
+      update_option('webhook_debug', $_GET);
+     }
+
     /**
      * Get the authorization token URL.
      *
@@ -302,7 +316,7 @@ function qplugin_init_gateway_class() {
     protected function get_create_invoice_url() {
 		  return 'https://merchant-sandbox.qpay.mn/v2/invoice';
 	  }
-   }
+  }
 }
 
 /**
@@ -315,9 +329,7 @@ function qplugin_init_gateway_class() {
  * @since    1.0.0
  */
 function run_qplugin() {
-
   $plugin = new Qplugin();
   $plugin->run();
-
 }
 run_qplugin();
