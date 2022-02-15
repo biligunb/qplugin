@@ -1,4 +1,4 @@
-![ezgif-5-7c61231337](https://user-images.githubusercontent.com/26878066/150959215-161131b9-f350-4473-9e41-37e1acd0f609.gif)
+![](https://github.com/biligunb/qplugin/blob/d33835fb790b1d8b73da62745a7c95e566cfd696/qplugin.gif)
 
 # QPlugin
 
