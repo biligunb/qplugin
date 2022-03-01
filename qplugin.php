@@ -241,6 +241,7 @@ function qplugin_init_gateway_class() {
       // $array_with_parameters->lines = array('line_description'=>'Invoice description','line_quantity'=>'1.00', 'line_unit_price'=>$order->get_total());
       $array_with_parameters->lines = array (0 => array ('line_description' => 'Invoice description', 'line_quantity' => '1.00', 'line_unit_price' => '11.00' ));
       $array_with_parameters->amount = 10;
+      $array_with_parameters->callback_url = "http://qplugin.local/wc-api/qplugin?id=$order_id";
 
       print_r('Auth');
       debug_to_console($this->$test_username);
@@ -290,8 +291,7 @@ function qplugin_init_gateway_class() {
      * In case you need a webhook, like PayPal IPN etc
      */
     public function webhook() {
-      // $order = wc_get_order( $_GET['id'] );
-      $order = wc_get_order(47);
+      $order = wc_get_order( $_GET['id'] );
       $order->payment_complete();
       print_r('order');
       print_r($order);
