@@ -124,6 +124,9 @@ function qplugin_init_gateway_class() {
     
       // We need custom JavaScript to obtain a token
       add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
+
+      // thank you page output
+      add_action( 'woocommerce_receipt_'.$this->id, array( $this, 'generate_qr_code' ), 4, 1 );
       
       // You can also register a webhook here
       add_action( 'woocommerce_api_qplugin', array( $this, 'webhook' ) );
@@ -224,14 +227,34 @@ function qplugin_init_gateway_class() {
       // Mark as pending (we're awaiting the payment)
       $order->update_status( $this->default_status );
 
+      define( 'WP_DEBUG', true );
+      define( 'WP_DEBUG_LOG', true );
+
+      $redirect_url = add_query_arg( array( 'orderId' => $order_id ), $order->get_checkout_payment_url( true ) );
+
+      return array(
+        'result' => 'success',
+        'redirect' => apply_filters( 'qpay_process_payment_redirect', $redirect_url, $order )
+      );
+    }
+
+    /**
+     * Show Qpay details as html output
+     *
+     * @param WC_Order $order_id Order id.
+     * @return string
+     */
+    public function generate_qr_code( $order_id ) {
+      global $woocommerce;
+
+      $order = wc_get_order( $order_id );
+
       // Reduce stock levels
       $order->reduce_order_stock();
               
       // Remove cart
       $woocommerce->cart->empty_cart();
 
-      define( 'WP_DEBUG', true );
-      define( 'WP_DEBUG_LOG', true );
       $invoice_due_date = get_the_date( 'Y-m-d H:i:s' ) . '.00'; // "2019-11-29 09:11:03.840"
 
       $array_with_parameters->sender_invoice_no = '1234567';
@@ -242,11 +265,7 @@ function qplugin_init_gateway_class() {
       // $array_with_parameters->lines = array('line_description'=>'Invoice description','line_quantity'=>'1.00', 'line_unit_price'=>$order->get_total());
       $array_with_parameters->lines = array (0 => array ('line_description' => 'Invoice description', 'line_quantity' => '1.00', 'line_unit_price' => '11.00' ));
       $array_with_parameters->amount = 10;
-      $array_with_parameters->callback_url = "http://qplugin.local/wc-api/qplugin?id=$order_id";
 
-      print_r('Auth');
-      debug_to_console($this->$test_username);
-      debug_to_console($this->$test_password);
       $args = array(
         'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'TEST_MERCHANT' . ':' . '123456' ) ),
         'method'      => 'POST',
@@ -255,33 +274,30 @@ function qplugin_init_gateway_class() {
       $response = wp_remote_post($this->get_auth_token_url(), $args);
       $body = json_decode($response['body'], true);
       $access_token = $body['access_token'];
-      print_r('Access token');
-      debug_to_console($access_token);
 
-      $args2 = array(
+      $args = array(
         'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $access_token ),
         'body'        => json_encode($array_with_parameters),
         'method'      => 'POST',
         'data_format' => 'body',
       );
-      $response2 = wp_remote_post($this->get_create_invoice_url(), $args2);
+      $response = wp_remote_post($this->get_create_invoice_url(), $args);
 
-      if(!is_wp_error($response2)) {
-        print_r('Response');
-        print_r($response2);
+      if(!is_wp_error($response)) {
+        $body = json_decode($response['body'], true);
 
-        $body = json_decode($response2['body'], true);
-        print_r('Body');
-        debug_to_console($body);
-        error_log(print_r($response2, true));
-
+        // debug_to_console($body);
         $invoiceId = $body['invoice_id'];
-        $redirect_url = add_query_arg( array('qpay_code' => $invoiceId), $order->get_checkout_payment_url( true ) );
+        $qrCode = $body['qr_image'];
 
-        return array(
-          'result' => 'success',
-          'redirect' => apply_filters( 'qpay_process_payment_redirect', $redirect_url, $order )
-        );
+        debug_to_console('test')
+
+        ?>
+          <div class="checkout-qplugin-payment">
+            <img src="data:image/png;base64,<?php echo $qrCode ?>" alt="" />
+          </div>
+        <?php
+        return;
       } else {
         wc_add_notice('Connection error.', 'error');
         return;
