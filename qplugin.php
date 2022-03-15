@@ -264,8 +264,9 @@ function qplugin_init_gateway_class() {
       $array_with_parameters->invoice_description = 'Invoice description';
       // $array_with_parameters->invoice_due_date = $invoice_due_date;
       // $array_with_parameters->lines = array('line_description'=>'Invoice description','line_quantity'=>'1.00', 'line_unit_price'=>$order->get_total());
-      $array_with_parameters->lines = array (0 => array ('line_description' => 'Invoice description', 'line_quantity' => '1.00', 'line_unit_price' => '11.00' ));
-      $array_with_parameters->amount = 10;
+      // $array_with_parameters->lines = array (0 => array ('line_description' => 'Invoice description', 'line_quantity' => '1.00', 'line_unit_price' => '11.00' ));
+      $array_with_parameters->amount = $order->get_total();
+      $array_with_parameters->callback_url = "http://qplugin.local/wc-api/qplugin?id=$order_id";
 
       $args = array(
         'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'TEST_MERCHANT' . ':' . '123456' ) ),
@@ -370,7 +371,7 @@ function qplugin_init_gateway_class() {
      * @return string.
      */
     protected function get_auth_token_url() {
-      return 'https://merchant.qpay.mn/v2/auth/token';
+      return 'https://merchant-sandbox.qpay.mn/v2/auth/token';
     }
 
     /**
@@ -379,7 +380,7 @@ function qplugin_init_gateway_class() {
      * @return string.
      */
     protected function get_create_invoice_url() {
-		  return 'https://merchant.qpay.mn/v2/invoice';
+		  return 'https://merchant-sandbox.qpay.mn/v2/invoice';
 	  }
 
     /**
