@@ -399,7 +399,10 @@ function qplugin_init_gateway_class() {
  * @since    1.0.0
  */
 function run_qplugin() {
+
   $plugin = new Qplugin();
   $plugin->run();
+
 }
+
 run_qplugin();
