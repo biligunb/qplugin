@@ -229,6 +229,7 @@ function qplugin_init_gateway_class() {
 
       define( 'WP_DEBUG', true );
       define( 'WP_DEBUG_LOG', true );
+      define( 'WP_DEBUG_DISPLAY', false );
 
       $redirect_url = add_query_arg( array( 'orderId' => $order_id ), $order->get_checkout_payment_url( true ) );
 
