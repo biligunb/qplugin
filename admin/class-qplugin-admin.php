@@ -105,8 +105,4 @@ class Qplugin_Admin {
 
 		return $gateways;
 	}
-
-	// public function qplugin_init_gateway_class() {
-	// 	// TODO
-	// }
 }
