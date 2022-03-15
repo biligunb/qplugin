@@ -371,7 +371,7 @@ function qplugin_init_gateway_class() {
      * @return string.
      */
     protected function get_auth_token_url() {
-      return 'https://merchant-sandbox.qpay.mn/v2/auth/token';
+      return 'https://merchant.qpay.mn/v2/auth/token';
     }
 
     /**
@@ -380,7 +380,7 @@ function qplugin_init_gateway_class() {
      * @return string.
      */
     protected function get_create_invoice_url() {
-		  return 'https://merchant-sandbox.qpay.mn/v2/invoice';
+		  return 'https://merchant.qpay.mn/v2/invoice';
 	  }
 
     /**
@@ -389,7 +389,6 @@ function qplugin_init_gateway_class() {
      * @return string.
      */
     protected function get_payment_url($qpay_payment_id) {
-		  // return 'https://merchant-sandbox.qpay.mn/v2/payment/check';
 		  return "https://merchant.qpay.mn/v2/payment/$qpay_payment_id";
 	  }
 
@@ -399,7 +398,6 @@ function qplugin_init_gateway_class() {
      * @return string.
      */
     protected function get_check_payment_url() {
-		  // return 'https://merchant-sandbox.qpay.mn/v2/payment/check';
 		  return 'https://merchant.qpay.mn/v2/payment/check';
 	  }
   }
