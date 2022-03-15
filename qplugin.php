@@ -292,6 +292,24 @@ function qplugin_init_gateway_class() {
      */
     public function webhook() {
       $order = wc_get_order( $_GET['id'] );
+
+      $array_with_parameters->object_type = 'INVOICE';
+      $array_with_parameters->object_id = $_GET['qpay_payment_id'];
+
+      $args = array(
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $access_token ),
+        'body'        => json_encode($array_with_parameters),
+        'method'      => 'POST',
+        'data_format' => 'body',
+      );
+      $response = wp_remote_post($this->get_check_payment_url(), $args);
+      print_r('Response');
+      print_r($response);
+
+      # if SUCCESS &
+      # rows[0].payment_id = `qpay_payment_id`
+      # rows[0].payment_status = PAID
+
       $order->payment_complete();
       print_r('order');
       print_r($order);
@@ -315,6 +333,15 @@ function qplugin_init_gateway_class() {
      */
     protected function get_create_invoice_url() {
 		  return 'https://merchant-sandbox.qpay.mn/v2/invoice';
+	  }
+
+    /**
+     * Get the check payment URL.
+     *
+     * @return string.
+     */
+    protected function get_check_payment_url() {
+		  return 'https://merchant-sandbox.qpay.mn/v2/payment/check';
 	  }
   }
 }
