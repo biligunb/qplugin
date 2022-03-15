@@ -231,6 +231,7 @@ function qplugin_init_gateway_class() {
       $woocommerce->cart->empty_cart();
 
       define( 'WP_DEBUG', true );
+      define( 'WP_DEBUG_LOG', true );
       $invoice_due_date = get_the_date( 'Y-m-d H:i:s' ) . '.00'; // "2019-11-29 09:11:03.840"
 
       $array_with_parameters->sender_invoice_no = '1234567';
@@ -272,9 +273,9 @@ function qplugin_init_gateway_class() {
         $body = json_decode($response2['body'], true);
         print_r('Body');
         debug_to_console($body);
-        $invoiceId = $body['invoice_id'];
-        $qrImage = $body['qr_image'];
+        error_log(print_r($response2, true));
 
+        $invoiceId = $body['invoice_id'];
         $redirect_url = add_query_arg( array('qpay_code' => $invoiceId), $order->get_checkout_payment_url( true ) );
 
         return array(
@@ -293,19 +294,32 @@ function qplugin_init_gateway_class() {
     public function webhook() {
       $order = wc_get_order( $_GET['id'] );
 
-      $array_with_parameters->object_type = 'INVOICE';
-      $array_with_parameters->object_id = $_GET['qpay_payment_id'];
-
       $args = array(
-        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'TEST_MERCHANT' . ':' . '123456' ) ),
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'UPARKING' . ':' . 'IhuvZElw' ) ),
         'method'      => 'POST',
         'data_format' => 'body',
       );
-      $response = wp_remote_post($this->get_auth_token_url(), $args);
+      // $response = wp_remote_post($this->get_auth_token_url(), $args);
+      $response = wp_remote_post('https://merchant.qpay.mn/v2/auth/token', $args);
       $body = json_decode($response['body'], true);
       $access_token = $body['access_token'];
       print_r('Access token');
       debug_to_console($access_token);
+
+      $args2 = array(
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $access_token ),
+        'method'      => 'GET',
+        'data_format' => 'body',
+      );
+      $response2 = wp_remote_post($this->get_payment_url($_GET['qpay_payment_id']), $args2);
+      print_r('Response');
+      print_r($response2);
+      error_log(print_r($response2, true));
+      $body = json_decode($response2['body'], true);
+      error_log($body['object_id']);
+
+      $array_with_parameters->object_type = 'INVOICE';
+      $array_with_parameters->object_id = $body['object_id'];
 
       $args2 = array(
         'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $access_token ),
@@ -316,14 +330,21 @@ function qplugin_init_gateway_class() {
       $response2 = wp_remote_post($this->get_check_payment_url(), $args2);
       print_r('Response');
       print_r($response2);
+      // error_log(print_r($response2, true));
 
-      # if SUCCESS &
-      # rows[0].payment_id = `qpay_payment_id`
-      # rows[0].payment_status = PAID
+      $body = json_decode($response2['body'], true);
+      // error_log(print_r($body, true));
+      $payment_status = $body['rows'][0]['payment_status'];
+      $payment_id = $body['rows'][0]['payment_id'];
+      // error_log($payment_status);
+      // error_log($payment_id);
 
-      $order->payment_complete();
-      print_r('order');
-      print_r($order);
+      // If payment status = PAID & paymentId = qpay_payment_id
+      if ($payment_status == 'PAID' && $payment_id == $_GET['qpay_payment_id']) {
+        $order->payment_complete();
+        print_r('order');
+        print_r($order);
+      }
 
       update_option('webhook_debug', $_GET);
      }
@@ -347,12 +368,23 @@ function qplugin_init_gateway_class() {
 	  }
 
     /**
+     * Get the payment URL.
+     *
+     * @return string.
+     */
+    protected function get_payment_url($qpay_payment_id) {
+		  // return 'https://merchant-sandbox.qpay.mn/v2/payment/check';
+		  return "https://merchant.qpay.mn/v2/payment/$qpay_payment_id";
+	  }
+
+    /**
      * Get the check payment URL.
      *
      * @return string.
      */
     protected function get_check_payment_url() {
-		  return 'https://merchant-sandbox.qpay.mn/v2/payment/check';
+		  // return 'https://merchant-sandbox.qpay.mn/v2/payment/check';
+		  return 'https://merchant.qpay.mn/v2/payment/check';
 	  }
   }
 }
