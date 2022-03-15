@@ -27,7 +27,7 @@
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
-	die;
+  die;
 }
 
 /**
@@ -42,8 +42,8 @@ define( 'QPLUGIN_VERSION', '1.0.0' );
  * This action is documented in includes/class-qplugin-activator.php
  */
 function activate_qplugin() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-qplugin-activator.php';
-	Qplugin_Activator::activate();
+  require_once plugin_dir_path( __FILE__ ) . 'includes/class-qplugin-activator.php';
+  Qplugin_Activator::activate();
 }
 
 /**
@@ -51,8 +51,8 @@ function activate_qplugin() {
  * This action is documented in includes/class-qplugin-deactivator.php
  */
 function deactivate_qplugin() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-qplugin-deactivator.php';
-	Qplugin_Deactivator::deactivate();
+  require_once plugin_dir_path( __FILE__ ) . 'includes/class-qplugin-deactivator.php';
+  Qplugin_Deactivator::deactivate();
 }
 
 register_activation_hook( __FILE__, 'activate_qplugin' );
@@ -79,8 +79,8 @@ if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins',
  */
 function run_qplugin() {
 
-	$plugin = new Qplugin();
-	$plugin->run();
+  $plugin = new Qplugin();
+  $plugin->run();
 
 }
 
