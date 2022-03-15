@@ -290,8 +290,6 @@ function qplugin_init_gateway_class() {
         $invoiceId = $body['invoice_id'];
         $qrCode = $body['qr_image'];
 
-        debug_to_console('test')
-
         ?>
           <div class="checkout-qplugin-payment">
             <img src="data:image/png;base64,<?php echo $qrCode ?>" alt="" />
