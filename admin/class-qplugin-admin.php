@@ -100,4 +100,13 @@ class Qplugin_Admin {
 
 	}
 
+	function qplugin_add_gateway_class( $gateways ) {
+		$gateways[] = include plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-qplugin-wc-payment-gateway.php';
+
+		return $gateways;
+	}
+
+	// public function qplugin_init_gateway_class() {
+	// 	// TODO
+	// }
 }
