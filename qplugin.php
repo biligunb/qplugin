@@ -295,7 +295,7 @@ function qplugin_init_gateway_class() {
       $order = wc_get_order( $_GET['id'] );
 
       $args = array(
-        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'UPARKING' . ':' . 'IhuvZElw' ) ),
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'asdf' . ':' . 'asdf' ) ),
         'method'      => 'POST',
         'data_format' => 'body',
       );
