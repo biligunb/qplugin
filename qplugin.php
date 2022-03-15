@@ -297,14 +297,25 @@ function qplugin_init_gateway_class() {
       $array_with_parameters->object_id = $_GET['qpay_payment_id'];
 
       $args = array(
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'TEST_MERCHANT' . ':' . '123456' ) ),
+        'method'      => 'POST',
+        'data_format' => 'body',
+      );
+      $response = wp_remote_post($this->get_auth_token_url(), $args);
+      $body = json_decode($response['body'], true);
+      $access_token = $body['access_token'];
+      print_r('Access token');
+      debug_to_console($access_token);
+
+      $args2 = array(
         'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $access_token ),
         'body'        => json_encode($array_with_parameters),
         'method'      => 'POST',
         'data_format' => 'body',
       );
-      $response = wp_remote_post($this->get_check_payment_url(), $args);
+      $response2 = wp_remote_post($this->get_check_payment_url(), $args2);
       print_r('Response');
-      print_r($response);
+      print_r($response2);
 
       # if SUCCESS &
       # rows[0].payment_id = `qpay_payment_id`
