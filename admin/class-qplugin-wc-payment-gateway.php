@@ -140,7 +140,6 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
 		*/
 		public function webhook() { }
 	}
-
 }
 
 return new WC_QPlugin_Gateway();

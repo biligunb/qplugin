@@ -45,4 +45,5 @@ $form_fields = array(
       'type'        => 'password'
   )
 );
+
 ?>
