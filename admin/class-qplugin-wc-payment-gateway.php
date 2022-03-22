@@ -30,7 +30,7 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
      */
     public function __construct() {
       $this->id = 'qplugin'; // payment gateway plugin ID
-      $this->icon = ''; // URL of the icon that will be displayed on checkout page near your gateway name
+      $this->icon = plugin_dir_url( __FILE__ ) . '../public/images/icons/logo_100px.png'; // URL of the icon that will be displayed on checkout page near your gateway name
       $this->has_fields = true; // in case you need a custom credit card form
       $this->method_title = 'QPlugin Gateway';
       $this->method_description = 'Payment using Qpay'; // will be displayed on the options page
@@ -50,17 +50,20 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
       $this->description = $this->get_option( 'description' );
       $this->enabled = $this->get_option( 'enabled' );
       $this->testmode = 'yes' === $this->get_option( 'testmode' );
-      $this->private_key = $this->testmode ? $this->get_option( 'test_private_key' ) : $this->get_option( 'private_key' );
-      $this->publishable_key = $this->testmode ? $this->get_option( 'test_publishable_key' ) : $this->get_option( 'publishable_key' );
+      $this->test_username = $this->testmode ? $this->get_option( 'test_username' ) : $this->get_option( 'username' );
+      $this->test_password = $this->testmode ? $this->get_option( 'test_password' ) : $this->get_option( 'password' );
     
       // This action hook saves the settings
       add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
     
       // We need custom JavaScript to obtain a token
       add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
+
+      // thank you page output
+      add_action( 'woocommerce_receipt_'.$this->id, array( $this, 'generate_qr_code' ), 4, 1 );
       
       // You can also register a webhook here
-      // add_action( 'woocommerce_api_{webhook name}', array( $this, 'webhook' ) );
+      add_action( 'woocommerce_api_qplugin', array( $this, 'webhook' ) );
     }
 
     /**
@@ -79,14 +82,14 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
           'title'       => 'Title',
           'type'        => 'text',
           'description' => 'This controls the title which the user sees during checkout.',
-          'default'     => 'Credit Card',
+          'default'     => 'Qpay',
           'desc_tip'    => true,
         ),
         'description' => array(
           'title'       => 'Description',
           'type'        => 'textarea',
           'description' => 'This controls the description which the user sees during checkout.',
-          'default'     => 'Pay with your credit card via our super-cool payment gateway.',
+          'default'     => 'Pay using QR code (qpay.mn)',
         ),
         'testmode' => array(
           'title'       => 'Test mode',
@@ -96,49 +99,242 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
           'default'     => 'yes',
           'desc_tip'    => true,
         ),
-        'test_publishable_key' => array(
-          'title'       => 'Test Publishable Key',
+        'test_username' => array(
+          'title'       => 'Test username',
+          'type'        => 'text',
+          'default'     => 'TEST_MERCHANT'
+        ),
+        'test_password' => array(
+          'title'       => 'Test password',
+          'type'        => 'text',
+          'default'     => '123456'
+        ),
+        'username' => array(
+          'title'       => 'Production username',
           'type'        => 'text'
         ),
-        'test_private_key' => array(
-          'title'       => 'Test Private Key',
-          'type'        => 'password',
-        ),
-        'publishable_key' => array(
-          'title'       => 'Live Publishable Key',
-          'type'        => 'text'
-        ),
-        'private_key' => array(
-          'title'       => 'Live Private Key',
+        'password' => array(
+          'title'       => 'Production password',
           'type'        => 'password'
         )
       );
     }
 
     /**
-    * You will need it if you want your custom credit card form
-    */
+     * You will need it if you want your custom credit card form
+     */
     public function payment_fields() { }
 
-    /*
-    * Custom CSS and JS, in most cases required only when you decided to go with a custom credit card form
-    */
-    public function payment_scripts() { }
+    /**
+     * Custom CSS and JS, in most cases required only when you decided to go with a custom credit card form
+     */
+    public function payment_scripts() {
+      // we need JavaScript to process a token only on cart/checkout pages
+      if ( ! is_cart() && ! is_checkout() && ! isset( $_GET['pay_for_order'] ) ) {
+        return;
+      }
+  
+      // if our payment gateway is disabled, we do not have to enqueue JS too
+      if ( 'no' === $this->enabled ) {
+        return;
+      }
+      
+      // no reason to continue if followings are not set
+      if ( empty( $this->test_username ) || empty( $this->test_password )) {
+        return;
+      }
+    }
 
-    /*
-      * Fields validation
-    */
+    /**
+     * Fields validation
+     */
     public function validate_fields() { }
 
-    /*
-    * We're processing the payments here
-    */
-    public function process_payment( $order_id ) { }
+    /**
+     * We're processing the payments here
+     */
+    public function process_payment( $order_id ) {
+      global $woocommerce;
+      // we need it to get order detail
+      $order = wc_get_order($order_id);
 
-    /*
-    * In case you need a webhook, like PayPal IPN etc
-    */
-    public function webhook() { }
+      // Mark as pending (we're awaiting the payment)
+      $order->update_status( $this->default_status );
+
+      define( 'WP_DEBUG', true );
+      define( 'WP_DEBUG_LOG', true );
+      define( 'WP_DEBUG_DISPLAY', false );
+
+      $redirect_url = add_query_arg( array( 'orderId' => $order_id ), $order->get_checkout_payment_url( true ) );
+
+      return array(
+        'result' => 'success',
+        'redirect' => apply_filters( 'qpay_process_payment_redirect', $redirect_url, $order )
+      );
+    }
+
+    /**
+     * Show Qpay details as html output
+     *
+     * @param WC_Order $order_id Order id.
+     * @return string
+     */
+    public function generate_qr_code( $order_id ) {
+      global $woocommerce;
+
+      $order = wc_get_order( $order_id );
+
+      // Reduce stock levels
+      $order->reduce_order_stock();
+              
+      // Remove cart
+      $woocommerce->cart->empty_cart();
+
+      $invoice_due_date = get_the_date( 'Y-m-d H:i:s' ) . '.00'; // "2019-11-29 09:11:03.840"
+
+      $array_with_parameters->sender_invoice_no = '1234567';
+      $array_with_parameters->invoice_code = 'TEST_INVOICE';
+      $array_with_parameters->invoice_receiver_code = 'terminal';
+      $array_with_parameters->invoice_description = 'Invoice description';
+      // $array_with_parameters->invoice_due_date = $invoice_due_date;
+      // $array_with_parameters->lines = array('line_description'=>'Invoice description','line_quantity'=>'1.00', 'line_unit_price'=>$order->get_total());
+      $array_with_parameters->lines = array (0 => array ('line_description' => 'Invoice description', 'line_quantity' => '1.00', 'line_unit_price' => '11.00' ));
+      $array_with_parameters->amount = 10;
+
+      $args = array(
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'TEST_MERCHANT' . ':' . '123456' ) ),
+        'method'      => 'POST',
+        'data_format' => 'body',
+      );
+      $response = wp_remote_post($this->get_auth_token_url(), $args);
+      $body = json_decode($response['body'], true);
+      $access_token = $body['access_token'];
+
+      $args = array(
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $access_token ),
+        'body'        => json_encode($array_with_parameters),
+        'method'      => 'POST',
+        'data_format' => 'body',
+      );
+      $response = wp_remote_post($this->get_create_invoice_url(), $args);
+
+      if(!is_wp_error($response)) {
+        $body = json_decode($response['body'], true);
+
+        // debug_to_console($body);
+        $invoiceId = $body['invoice_id'];
+        $qrCode = $body['qr_image'];
+
+        ?>
+          <div class="checkout-qplugin-payment">
+            <img src="data:image/png;base64,<?php echo $qrCode ?>" alt="" />
+          </div>
+        <?php
+        return;
+      } else {
+        wc_add_notice('Connection error.', 'error');
+        return;
+      }
+    }
+
+    /**
+     * In case you need a webhook, like PayPal IPN etc
+     */
+    public function webhook() {
+      $order = wc_get_order( $_GET['id'] );
+
+      $args = array(
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'asdf' . ':' . 'asdf' ) ),
+        'method'      => 'POST',
+        'data_format' => 'body',
+      );
+      // $response = wp_remote_post($this->get_auth_token_url(), $args);
+      $response = wp_remote_post('https://merchant.qpay.mn/v2/auth/token', $args);
+      $body = json_decode($response['body'], true);
+      $access_token = $body['access_token'];
+      print_r('Access token');
+      print_r($access_token);
+
+      $args2 = array(
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $access_token ),
+        'method'      => 'GET',
+        'data_format' => 'body',
+      );
+      $response2 = wp_remote_post($this->get_payment_url($_GET['qpay_payment_id']), $args2);
+      print_r('Response');
+      print_r($response2);
+      error_log(print_r($response2, true));
+      $body = json_decode($response2['body'], true);
+      error_log($body['object_id']);
+
+      $array_with_parameters->object_type = 'INVOICE';
+      $array_with_parameters->object_id = $body['object_id'];
+
+      $args2 = array(
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $access_token ),
+        'body'        => json_encode($array_with_parameters),
+        'method'      => 'POST',
+        'data_format' => 'body',
+      );
+      $response2 = wp_remote_post($this->get_check_payment_url(), $args2);
+      print_r('Response');
+      print_r($response2);
+      // error_log(print_r($response2, true));
+
+      $body = json_decode($response2['body'], true);
+      // error_log(print_r($body, true));
+      $payment_status = $body['rows'][0]['payment_status'];
+      $payment_id = $body['rows'][0]['payment_id'];
+      // error_log($payment_status);
+      // error_log($payment_id);
+
+      // If payment status = PAID & paymentId = qpay_payment_id
+      if ($payment_status == 'PAID' && $payment_id == $_GET['qpay_payment_id']) {
+        $order->payment_complete();
+        print_r('order');
+        print_r($order);
+      }
+
+      update_option('webhook_debug', $_GET);
+     }
+
+    /**
+     * Get the authorization token URL.
+     *
+     * @return string.
+     */
+    protected function get_auth_token_url() {
+      return 'https://merchant-sandbox.qpay.mn/v2/auth/token';
+    }
+
+    /**
+     * Get the create invoice URL.
+     *
+     * @return string.
+     */
+    protected function get_create_invoice_url() {
+		  return 'https://merchant-sandbox.qpay.mn/v2/invoice';
+	  }
+
+    /**
+     * Get the payment URL.
+     *
+     * @return string.
+     */
+    protected function get_payment_url($qpay_payment_id) {
+		  // return 'https://merchant-sandbox.qpay.mn/v2/payment/check';
+		  return "https://merchant.qpay.mn/v2/payment/$qpay_payment_id";
+	  }
+
+    /**
+     * Get the check payment URL.
+     *
+     * @return string.
+     */
+    protected function get_check_payment_url() {
+		  // return 'https://merchant-sandbox.qpay.mn/v2/payment/check';
+		  return 'https://merchant.qpay.mn/v2/payment/check';
+	  }
   }
 
 }

@@ -158,7 +158,7 @@ class Qplugin {
     $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
     // Add plugin settings to WooCommerce
-    // $this->loader->add_filter( 'woocommerce_payment_gateways', $plugin_admin, 'qplugin_add_gateway_class' );
+    $this->loader->add_filter( 'woocommerce_payment_gateways', $plugin_admin, 'qplugin_add_gateway_class' );
 
   }
 
