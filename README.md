@@ -1,6 +1,6 @@
 ![](qplugin.gif)
 
-# QPlugin
+# QPlugin (^_^)
 
 > WordPress plugin for `WooCommerce - Payment Gateway` using [QPay](https://qpay.mn/)
 
