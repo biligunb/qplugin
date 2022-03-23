@@ -143,6 +143,17 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
       if ( empty( $this->test_username ) || empty( $this->test_password )) {
         return;
       }
+
+      // bootstrap
+      wp_register_style( 'bootstrap', plugins_url( 'css/bootstrap.min.css' , __FILE__ ), array(), '5.1.3' );
+      wp_register_script( 'bootstrap', plugins_url( 'js/bootstrap.bundle.min.js' , __FILE__ ), array( 'jquery' ), '5.1.3', true );
+
+      // jquery confirm
+      wp_register_style( 'jquery-confirm', plugins_url( 'css/jquery-confirm.min.css' , __FILE__ ), array(), '3.3.2' );
+      wp_register_script( 'jquery-confirm', plugins_url( 'js/jquery-confirm.min.js' , __FILE__ ), array( 'jquery', 'bootstrap' ), '3.3.2', true );
+
+      wp_register_style( 'qpay', plugins_url( 'css/qpay.css' , __FILE__ ), array(), '1.0.0' );
+      wp_register_script( 'qpay', plugins_url( 'js/qpay.js' , __FILE__ ), array( 'jquery', 'bootstrap', 'jquery-confirm'), '1.0.0', true );
     }
 
     /**
@@ -225,11 +236,26 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
         $invoiceId = $body['invoice_id'];
         $qrCode = $body['qr_image'];
 
-        ?>
-          <div class="checkout-qplugin-payment">
-            <img src="data:image/png;base64,<?php echo $qrCode ?>" alt="" />
-          </div>
-        <?php
+        wp_enqueue_style( 'bootstrap' );
+        wp_enqueue_script( 'bootstrap' );
+        wp_enqueue_style( 'jquery-confirm' );
+        wp_enqueue_script( 'jquery-confirm' );
+        wp_enqueue_style( 'qpay' );
+        wp_enqueue_script( 'qpay' );
+
+        wp_localize_script( 'qpay', 'qpay_params',
+          array(
+            'url' => admin_url()."admin-ajax.php?action=fetch_order_status&order_id=".$order_id,
+            'orderId' => $order_id,
+            'qrcode' => "data:image/png;base64,".$qrCode,
+            'expire' => 120,
+            'icon' => plugin_dir_url( __FILE__ ) . '../public/images/icons/qpay logo.svg',
+            'success' => plugin_dir_url( __FILE__ ) . '../public/images/gifs/payment-success.gif',
+            'successText' => 'Төлбөр амжилттай төлөгдлөө',
+            'failure' => plugin_dir_url( __FILE__ ) . '../public/images/gifs/payment-failure.gif',
+            'failureText' => 'Төлбөр төлөх хугацаа дууслаа',
+          )
+        );
         return;
       } else {
         wc_add_notice('Connection error.', 'error');
