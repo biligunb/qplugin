@@ -245,15 +245,19 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
 
         wp_localize_script( 'qpay', 'qpay_params',
           array(
+            'icon' => plugin_dir_url( __FILE__ ) . '../public/images/icons/qpay logo.svg',
             'url' => admin_url()."admin-ajax.php?action=fetch_order_status&order_id=".$order_id,
             'orderId' => $order_id,
             'qrcode' => "data:image/png;base64,".$qrCode,
             'expire' => 120,
-            'icon' => plugin_dir_url( __FILE__ ) . '../public/images/icons/qpay logo.svg',
+            'processingText' => 'Та төлбөр төлөгдөх хүртэл түр хүлээнэ үү!',
             'success' => plugin_dir_url( __FILE__ ) . '../public/images/gifs/payment-success.gif',
             'successText' => 'Төлбөр амжилттай төлөгдлөө',
             'failure' => plugin_dir_url( __FILE__ ) . '../public/images/gifs/payment-failure.gif',
-            'failureText' => 'Төлбөр төлөх хугацаа дууслаа',
+            'expiredText' => 'Төлбөр төлөх хугацаа дууслаа',
+            'cancelledText' => 'Захиалга цуцлагдсан байна',
+            'failedText' => 'Төлбөр төлөлт амжилтгүй боллоо',
+            'serverErrorText' => 'Серверт алдаа гарлаа. Та админтай холбогдож захиалгаа шалгуулна уу',
           )
         );
         return;
