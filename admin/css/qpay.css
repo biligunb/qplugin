@@ -13,10 +13,19 @@
   padding-left: 15px;
 }
 
-.qpay-qrcode {
+.qplugin-qrcode {
   max-width: 300px !important;
 }
 
-.payment-result {
+.qplugin-payment-result {
   max-width: 250px !important;
+}
+
+.qplugin-deep-link {
+  background: #ecf0f1;
+  color: #333;
+  font-weight: bold;
+  font-size: 14px;
+  text-shadow: none;
+  padding: 6px 12px;
 }

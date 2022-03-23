@@ -41,7 +41,7 @@
                     modal.setColumnClass("col-md-6");
                     modal.setContent(`<div class="container">
                         <div class="row justify-content-center">
-                          <img class="payment-result" src="${qpay_params.success}" alt="" />
+                          <img class="qplugin-payment-result" src="${qpay_params.success}" alt="" />
                           <div class="position-absolute bottom-0">
                             <p class="text-center fs-6 fw-bold text-break">${qpay_params.successText}</p>
                           </div>
@@ -53,7 +53,7 @@
                     modal.setColumnClass("col-md-6");
                     modal.setContent(`<div class="container">
                         <div class="row justify-content-center">
-                          <img class="payment-result" src="${qpay_params.failure}" alt="" />
+                          <img class="qplugin-payment-result" src="${qpay_params.failure}" alt="" />
                           <div class="position-absolute bottom-0">
                             <p class="text-center fs-6 fw-bold text-break">${qpay_params.cancelledText}</p>
                           </div>
@@ -65,7 +65,7 @@
                     modal.setColumnClass("col-md-6");
                     modal.setContent(`<div class="container">
                         <div class="row justify-content-center">
-                          <img class="payment-result" src="${qpay_params.failure}" alt="" />
+                          <img class="qplugin-payment-result" src="${qpay_params.failure}" alt="" />
                           <div class="position-absolute bottom-0">
                             <p class="text-center fs-6 fw-bold text-break">${qpay_params.failedText}</p>
                           </div>
@@ -80,7 +80,7 @@
                 modal.setColumnClass("col-md-6");
                 modal.setContent(`<div class="container">
                     <div class="row justify-content-center">
-                      <img class="payment-result" src="${qpay_params.failure}" alt="" />
+                      <img class="qplugin-payment-result" src="${qpay_params.failure}" alt="" />
                       <div class="position-absolute bottom-0">
                         <p class="text-center fs-6 fw-bold text-break">${qpay_params.serverErrorText}</p>
                       </div>
@@ -92,7 +92,7 @@
               modal.setColumnClass("col-md-6");
               modal.setContent(`<div class="container">
                   <div class="row justify-content-center">
-                    <img class="payment-result" src="${qpay_params.failure}" alt="" />
+                    <img class="qplugin-payment-result" src="${qpay_params.failure}" alt="" />
                     <div class="position-absolute bottom-0">
                       <p class="text-center fs-6 fw-bold text-break">${qpay_params.expiredText}</p>
                     </div>
@@ -109,6 +109,21 @@
     }, 1000);
   };
 
+  const deepLink = () => {
+    if (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      )
+    ) {
+      return `<div class="row justify-content-center">
+          <div class="col col-md-auto">
+            <a href="${qpay_params.deeplink}" class="btn btn-light qplugin-deep-link" role="button" aria-pressed="true" target="_blank">${qpay_params.deeplinkText}</a>
+          </div>
+        </div>`;
+    }
+    return ``;
+  };
+
   if (qpay_params) {
     const modal = $.dialog({
       title: `<div class="row justify-content-center align-items-center ">
@@ -121,13 +136,20 @@
           <div class="row align-items-center">
             <div class="col-md-6">
               <div class="row justify-content-center">
-                <img class="qpay-qrcode" src="${qpay_params.qrcode}" alt="" />
+                <img class="qplugin-qrcode" src="${
+                  qpay_params.qrcode
+                }" alt="" />
               </div>
             </div>
             <div class="col-md-6">
               <div class="row justify-content-center">
-                <p class="text-center"><span id="countdown" class="fs-1 fw-bold">${qpay_params.expire}</span><span> сек</span></p>
-                <p class="text-center fs-6 fw-normal text-break">${qpay_params.processingText}</p>
+                <p class="text-center"><span id="countdown" class="fs-1 fw-bold">${
+                  qpay_params.expire
+                }</span><span> сек</span></p>
+                <p class="text-center fs-6 fw-normal text-break">${
+                  qpay_params.processingText
+                }</p>
+                ${deepLink()}
               </div>
             </div>
           </div>

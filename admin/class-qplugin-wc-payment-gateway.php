@@ -232,9 +232,9 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
       if(!is_wp_error($response)) {
         $body = json_decode($response['body'], true);
 
-        // debug_to_console($body);
         $invoiceId = $body['invoice_id'];
-        $qrCode = $body['qr_image'];
+        $qrcode = $body['qr_image'];
+        $deeplink = $body['qPay_shortUrl'];
 
         wp_enqueue_style( 'bootstrap' );
         wp_enqueue_script( 'bootstrap' );
@@ -247,8 +247,10 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
           array(
             'icon' => plugin_dir_url( __FILE__ ) . '../public/images/icons/qpay logo.svg',
             'url' => admin_url()."admin-ajax.php?action=fetch_order_status&order_id=".$order_id,
+            'deeplink' => $deeplink,
+            'deeplinkText' => 'Банкны апп ашиглах',
             'orderId' => $order_id,
-            'qrcode' => "data:image/png;base64,".$qrCode,
+            'qrcode' => "data:image/png;base64,".$qrcode,
             'expire' => 120,
             'processingText' => 'Та төлбөр төлөгдөх хүртэл түр хүлээнэ үү!',
             'success' => plugin_dir_url( __FILE__ ) . '../public/images/gifs/payment-success.gif',
