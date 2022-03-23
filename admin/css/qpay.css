@@ -1,0 +1,22 @@
+.jconfirm.jconfirm-white .jconfirm-box, .jconfirm.jconfirm-light .jconfirm-box {
+  border-radius: 15px;
+  padding: 30 30px 0 30px;
+}
+
+.jconfirm .jconfirm-box div.jconfirm-closeIcon {
+  top: 30px;
+  right: 30px;
+}
+
+.jconfirm .jconfirm-box div.jconfirm-title-c {
+  padding-top: 6px;
+  padding-left: 15px;
+}
+
+.qpay-qrcode {
+  max-width: 300px !important;
+}
+
+.payment-result {
+  max-width: 250px !important;
+}
