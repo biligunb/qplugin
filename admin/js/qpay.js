@@ -37,7 +37,7 @@
               try {
                 const response = await checkOrderStatus();
                 switch (response) {
-                  case "processing":
+                  case "completed":
                     modal.setColumnClass("col-md-6");
                     modal.setContent(`<div class="container">
                         <div class="row justify-content-center">
