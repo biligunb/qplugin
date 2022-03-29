@@ -1,0 +1,31 @@
+.jconfirm.jconfirm-white .jconfirm-box, .jconfirm.jconfirm-light .jconfirm-box {
+  border-radius: 15px;
+  padding: 30 30px 0 30px;
+}
+
+.jconfirm .jconfirm-box div.jconfirm-closeIcon {
+  top: 30px;
+  right: 30px;
+}
+
+.jconfirm .jconfirm-box div.jconfirm-title-c {
+  padding-top: 6px;
+  padding-left: 15px;
+}
+
+.qplugin-qrcode {
+  max-width: 300px !important;
+}
+
+.qplugin-payment-result {
+  max-width: 250px !important;
+}
+
+.qplugin-deep-link {
+  background: #ecf0f1;
+  color: #333;
+  font-weight: bold;
+  font-size: 14px;
+  text-shadow: none;
+  padding: 6px 12px;
+}

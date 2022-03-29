@@ -68,6 +68,13 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-qplugin.php';
 // Make sure WooCommerce is active
 if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) return;
 
+function fetch_order_status() {
+  $order = wc_get_order( $_REQUEST['order_id'] );
+  $order_data = $order->get_data();
+  echo $order_data['status'];
+  die();
+}
+
 /**
  * Begins execution of the plugin.
  *
@@ -82,6 +89,9 @@ function run_qplugin() {
   $plugin = new Qplugin();
   $plugin->run();
 
+  // custom ajax api here
+  add_action('wp_ajax_nopriv_fetch_order_status', 'fetch_order_status');
+  add_action('wp_ajax_fetch_order_status','fetch_order_status');
 }
 
 run_qplugin();
