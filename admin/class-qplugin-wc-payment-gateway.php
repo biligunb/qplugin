@@ -221,11 +221,12 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
 
       $timestamp_now = get_the_date( 'Y-m-d H:i:s' ) . '.00'; // "2019-11-29 09:11:03.840"
       $invoice_due_date = date('Y-m-d H:i:s', strtotime('+2 minutes'));
+      $customer_email = $order->get_billing_email();
 
       $array_with_parameters->invoice_code = "$this->invoice_code"; // тохиргооноос авах
       $array_with_parameters->invoice_due_date = "$invoice_due_date";
       $array_with_parameters->invoice_description = "$order_id";
-      $array_with_parameters->invoice_receiver_code = 'terminal'; // mail, phone -> checkout дээр авах
+      $array_with_parameters->invoice_receiver_code = "$customer_email"; // mail, phone -> checkout дээр авах
       $array_with_parameters->sender_invoice_no = "$timestamp_now"; // timestamp
       $array_with_parameters->amount = $order->get_total();
       $array_with_parameters->callback_url = "https://fuuntech.mn/wc-api/qplugin?id=$order_id";
@@ -346,8 +347,7 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
       // If payment status = PAID & paymentId = qpay_payment_id
       if ($payment_status == 'PAID' && $payment_id == $_GET['qpay_payment_id']) {
         $order->payment_complete();
-        print_r('order');
-        print_r($order);
+        write_log('Webhook:Order', $order);
       }
 
       update_option('webhook_debug', $_GET);
