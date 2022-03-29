@@ -68,9 +68,24 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-qplugin.php';
 // Make sure WooCommerce is active
 if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) return;
 
+
+// Check write_log
+if (!function_exists('write_log')) {
+  /**
+   * Write log
+   */
+  function write_log($topic, $log) {
+    error_log(print_r("$topic: ".json_encode($log, JSON_PRETTY_PRINT), true));
+  }
+}
+
 function fetch_order_status() {
   $order = wc_get_order( $_REQUEST['order_id'] );
   $order_data = $order->get_data();
+  write_log("FetchOrderStatus:Order", [
+    'orderId' => $order_data['id'],
+    'status' => $order_data['status'],
+  ]);
   echo $order_data['status'];
   die();
 }
