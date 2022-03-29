@@ -52,6 +52,7 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
       $this->testmode = 'yes' === $this->get_option( 'testmode' );
       $this->test_username = $this->testmode ? $this->get_option( 'test_username' ) : $this->get_option( 'username' );
       $this->test_password = $this->testmode ? $this->get_option( 'test_password' ) : $this->get_option( 'password' );
+      $this->invoice_code = $this->get_option( 'invoice_code' );
     
       // This action hook saves the settings
       add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -108,6 +109,11 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
           'title'       => 'Test password',
           'type'        => 'text',
           'default'     => '123456'
+        ),
+        'invoice_code' => array(
+          'title'       => 'Invoice code (from QPay)',
+          'type'        => 'text',
+          'default'     => 'TEST_INVOICE'
         ),
         'username' => array(
           'title'       => 'Production username',
@@ -201,19 +207,19 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
       // Remove cart
       $woocommerce->cart->empty_cart();
 
-      $invoice_due_date = get_the_date( 'Y-m-d H:i:s' ) . '.00'; // "2019-11-29 09:11:03.840"
+      $timestamp_now = get_the_date( 'Y-m-d H:i:s' ) . '.00'; // "2019-11-29 09:11:03.840"
+      $invoice_due_date = date('Y-m-d H:i:s', strtotime('+2 minutes'));
 
-      $array_with_parameters->sender_invoice_no = '1234567';
-      $array_with_parameters->invoice_code = 'TEST_INVOICE';
-      $array_with_parameters->invoice_receiver_code = 'terminal';
-      $array_with_parameters->invoice_description = 'Invoice description';
-      // $array_with_parameters->invoice_due_date = $invoice_due_date;
-      // $array_with_parameters->lines = array('line_description'=>'Invoice description','line_quantity'=>'1.00', 'line_unit_price'=>$order->get_total());
-      $array_with_parameters->lines = array (0 => array ('line_description' => 'Invoice description', 'line_quantity' => '1.00', 'line_unit_price' => '11.00' ));
-      $array_with_parameters->amount = 10;
+      $array_with_parameters->invoice_code = "$this->invoice_code"; // тохиргооноос авах
+      $array_with_parameters->invoice_due_date = "$invoice_due_date";
+      $array_with_parameters->invoice_description = "$order_id";
+      $array_with_parameters->invoice_receiver_code = 'terminal'; // mail, phone -> checkout дээр авах
+      $array_with_parameters->sender_invoice_no = "$timestamp_now"; // timestamp
+      $array_with_parameters->amount = $order->get_total();
+      $array_with_parameters->callback_url = "https://fuuntech.mn/wc-api/qplugin?id=$order_id";
 
       $args = array(
-        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'TEST_MERCHANT' . ':' . '123456' ) ),
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( $this->test_username . ':' . $this->test_password ) ),
         'method'      => 'POST',
         'data_format' => 'body',
       );
@@ -276,7 +282,7 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
       $order = wc_get_order( $_GET['id'] );
 
       $args = array(
-        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( 'asdf' . ':' . 'asdf' ) ),
+        'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode( $this->test_username . ':' . $this->test_password ) ),
         'method'      => 'POST',
         'data_format' => 'body',
       );
@@ -336,7 +342,7 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
      * @return string.
      */
     protected function get_auth_token_url() {
-      return 'https://merchant-sandbox.qpay.mn/v2/auth/token';
+      return 'https://merchant.qpay.mn/v2/auth/token';
     }
 
     /**
@@ -345,7 +351,7 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
      * @return string.
      */
     protected function get_create_invoice_url() {
-		  return 'https://merchant-sandbox.qpay.mn/v2/invoice';
+		  return 'https://merchant.qpay.mn/v2/invoice';
 	  }
 
     /**
@@ -354,7 +360,6 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
      * @return string.
      */
     protected function get_payment_url($qpay_payment_id) {
-		  // return 'https://merchant-sandbox.qpay.mn/v2/payment/check';
 		  return "https://merchant.qpay.mn/v2/payment/$qpay_payment_id";
 	  }
 
@@ -364,7 +369,6 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
      * @return string.
      */
     protected function get_check_payment_url() {
-		  // return 'https://merchant-sandbox.qpay.mn/v2/payment/check';
 		  return 'https://merchant.qpay.mn/v2/payment/check';
 	  }
   }
