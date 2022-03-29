@@ -21,9 +21,15 @@
  * @author     Unimedia Solutions LLC engineers <hr_mongolia@unimedia.co.jp>
  */
 
- function write_log($topic, $log) {
-  error_log(print_r("$topic: ".json_encode($log, JSON_PRETTY_PRINT), true));
- }
+// Check write_log
+if (!function_exists('write_log')) {
+  /**
+   * Write log
+   */
+  function write_log($topic, $log) {
+    error_log(print_r("$topic: ".json_encode($log, JSON_PRETTY_PRINT), true));
+  }
+}
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
@@ -244,6 +250,7 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
 
       if(!is_wp_error($response)) {
         $body = json_decode($response['body'], true);
+        write_log("GenerateQRCode:QPay create invoice body", $body);
 
         $invoiceId = $body['invoice_id'];
         $qrcode = $body['qr_image'];
