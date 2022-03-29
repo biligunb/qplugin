@@ -184,9 +184,9 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
 
       write_log("ProcessPayment:Order", $order);
 
-      define( 'WP_DEBUG', true );
-      define( 'WP_DEBUG_LOG', true );
-      define( 'WP_DEBUG_DISPLAY', false );
+      if ( !defined( 'WP_DEBUG' ) ) define( 'WP_DEBUG', true );
+      if ( !defined( 'WP_DEBUG_LOG' ) ) define( 'WP_DEBUG_LOG', true );
+      if ( !defined( 'WP_DEBUG_DISPLAY' ) ) define( 'WP_DEBUG_DISPLAY', false );
 
       $redirect_url = add_query_arg( array( 'orderId' => $order_id ), $order->get_checkout_payment_url( true ) );
 
