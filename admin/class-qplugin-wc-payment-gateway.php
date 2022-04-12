@@ -104,7 +104,6 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
         'invoice_code' => array(
           'title'       => 'Invoice code (from QPay)',
           'type'        => 'text',
-          'default'     => 'TEST_INVOICE'
         ),
         'username' => array(
           'title'       => 'Production username',
@@ -289,8 +288,7 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
         'method'      => 'POST',
         'data_format' => 'body',
       );
-      // $response = wp_remote_post($this->get_auth_token_url(), $args);
-      $response = wp_remote_post('https://merchant.qpay.mn/v2/auth/token', $args);
+      $response = wp_remote_post($this->get_auth_token_url(), $args);
       $body = json_decode($response['body'], true);
       $access_token = $body['access_token'];
       write_log("Webhook:QPay auth response", $response);
@@ -317,14 +315,10 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
       );
       $response2 = wp_remote_post($this->get_check_payment_url(), $args2);
       write_log("Webhook:QPay check payment response", $response2);
-      // error_log(print_r($response2, true));
 
       $body = json_decode($response2['body'], true);
-      // error_log(print_r($body, true));
       $payment_status = $body['rows'][0]['payment_status'];
       $payment_id = $body['rows'][0]['payment_id'];
-      // error_log($payment_status);
-      // error_log($payment_id);
 
       // If payment status = PAID & paymentId = qpay_payment_id
       if ($payment_status == 'PAID' && $payment_id == $_GET['qpay_payment_id']) {
