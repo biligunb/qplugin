@@ -67,7 +67,7 @@ class Qplugin {
    * @since    1.0.0
    */
   public function __construct() {
-    if ( defined( 'QPLUGIN_VERSION' ) ) {
+    if (defined('QPLUGIN_VERSION')) {
       $this->version = QPLUGIN_VERSION;
     } else {
       $this->version = '1.0.0';
@@ -78,7 +78,6 @@ class Qplugin {
     $this->set_locale();
     $this->define_admin_hooks();
     $this->define_public_hooks();
-
   }
 
   /**
@@ -103,27 +102,26 @@ class Qplugin {
      * The class responsible for orchestrating the actions and filters of the
      * core plugin.
      */
-    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-qplugin-loader.php';
+    require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-qplugin-loader.php';
 
     /**
      * The class responsible for defining internationalization functionality
      * of the plugin.
      */
-    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-qplugin-i18n.php';
+    require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-qplugin-i18n.php';
 
     /**
      * The class responsible for defining all actions that occur in the admin area.
      */
-    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-qplugin-admin.php';
+    require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-qplugin-admin.php';
 
     /**
      * The class responsible for defining all actions that occur in the public-facing
      * side of the site.
      */
-    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-qplugin-public.php';
+    require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-qplugin-public.php';
 
     $this->loader = new Qplugin_Loader();
-
   }
 
   /**
@@ -139,8 +137,7 @@ class Qplugin {
 
     $plugin_i18n = new Qplugin_i18n();
 
-    $this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
+    $this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
   }
 
   /**
@@ -152,14 +149,13 @@ class Qplugin {
    */
   private function define_admin_hooks() {
 
-    $plugin_admin = new Qplugin_Admin( $this->get_plugin_name(), $this->get_version() );
+    $plugin_admin = new Qplugin_Admin($this->get_plugin_name(), $this->get_version());
 
-    $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-    $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+    $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
+    $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
 
     // Add plugin settings to WooCommerce
-    $this->loader->add_filter( 'woocommerce_payment_gateways', $plugin_admin, 'qplugin_add_gateway_class' );
-
+    $this->loader->add_filter('woocommerce_payment_gateways', $plugin_admin, 'qplugin_add_gateway_class');
   }
 
   /**
@@ -171,11 +167,10 @@ class Qplugin {
    */
   private function define_public_hooks() {
 
-    $plugin_public = new Qplugin_Public( $this->get_plugin_name(), $this->get_version() );
+    $plugin_public = new Qplugin_Public($this->get_plugin_name(), $this->get_version());
 
-    $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-    $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
+    $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
+    $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
   }
 
   /**

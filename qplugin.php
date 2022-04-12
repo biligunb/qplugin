@@ -26,7 +26,7 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
+if (!defined('WPINC')) {
   die;
 }
 
@@ -35,14 +35,14 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'QPLUGIN_VERSION', '1.0.0' );
+define('QPLUGIN_VERSION', '1.0.0');
 
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-qplugin-activator.php
  */
 function activate_qplugin() {
-  require_once plugin_dir_path( __FILE__ ) . 'includes/class-qplugin-activator.php';
+  require_once plugin_dir_path(__FILE__) . 'includes/class-qplugin-activator.php';
   Qplugin_Activator::activate();
 }
 
@@ -51,22 +51,22 @@ function activate_qplugin() {
  * This action is documented in includes/class-qplugin-deactivator.php
  */
 function deactivate_qplugin() {
-  require_once plugin_dir_path( __FILE__ ) . 'includes/class-qplugin-deactivator.php';
+  require_once plugin_dir_path(__FILE__) . 'includes/class-qplugin-deactivator.php';
   Qplugin_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_qplugin' );
-register_deactivation_hook( __FILE__, 'deactivate_qplugin' );
+register_activation_hook(__FILE__, 'activate_qplugin');
+register_deactivation_hook(__FILE__, 'deactivate_qplugin');
 
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-qplugin.php';
+require plugin_dir_path(__FILE__) . 'includes/class-qplugin.php';
 
 
 // Make sure WooCommerce is active
-if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) return;
+if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) return;
 
 
 // Check write_log
@@ -75,12 +75,12 @@ if (!function_exists('write_log')) {
    * Write log
    */
   function write_log($topic, $log) {
-    error_log(print_r("$topic: ".json_encode($log, JSON_PRETTY_PRINT), true));
+    error_log(print_r("$topic: " . json_encode($log, JSON_PRETTY_PRINT), true));
   }
 }
 
 function fetch_order_status() {
-  $order = wc_get_order( $_REQUEST['order_id'] );
+  $order = wc_get_order($_REQUEST['order_id']);
   $order_data = $order->get_data();
   write_log("FetchOrderStatus:Order", [
     'orderId' => $order_data['id'],
@@ -106,7 +106,7 @@ function run_qplugin() {
 
   // custom ajax api here
   add_action('wp_ajax_nopriv_fetch_order_status', 'fetch_order_status');
-  add_action('wp_ajax_fetch_order_status','fetch_order_status');
+  add_action('wp_ajax_fetch_order_status', 'fetch_order_status');
 }
 
 run_qplugin();
