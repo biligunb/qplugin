@@ -287,6 +287,7 @@ if ( ! class_exists( 'WC_QPlugin_Gateway' ) ) {
             'cancelledText' => 'Захиалга цуцлагдсан байна',
             'failedText' => 'Төлбөр төлөлт амжилтгүй боллоо',
             'serverErrorText' => 'Серверт алдаа гарлаа. Та админтай холбогдож захиалгаа шалгуулна уу',
+            'redirectUrl' => apply_filters( 'qplugin_payment_redirect_url', $this->get_return_url( $order ), $order ),
           )
         );
         return;
