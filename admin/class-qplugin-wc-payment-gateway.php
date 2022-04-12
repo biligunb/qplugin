@@ -269,7 +269,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
             'failure' => plugin_dir_url(__FILE__) . '../public/images/gifs/payment-failure.gif',
             'expiredText' => 'Төлбөр төлөх хугацаа дууслаа',
             'cancelledText' => 'Захиалга цуцлагдсан байна',
-            'failedText' => 'Төлбөр төлөлт амжилтгүй боллоо',
+            'failedText' => 'Захиалга амжилтгүй боллоо',
             'serverErrorText' => 'Серверт алдаа гарлаа. Та админтай холбогдож захиалгаа шалгуулна уу',
             'redirectUrl' => apply_filters('qplugin_payment_redirect_url', $this->get_return_url($order), $order),
             'orderUrl' => $order->get_view_order_url(),
