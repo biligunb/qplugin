@@ -78,6 +78,9 @@
                         </div>
                       </div>`);
                     stopIntervals();
+                    setTimeout(() => {
+                      window.location = qpay_params.orderUrl;
+                    }, 4500);
                     break;
                   case "failed":
                     modal.setColumnClass("col-md-6");
@@ -90,6 +93,9 @@
                         </div>
                       </div>`);
                     stopIntervals();
+                    setTimeout(() => {
+                      window.location = qpay_params.orderUrl;
+                    }, 4500);
                     break;
                   default:
                     break;

@@ -272,6 +272,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
             'failedText' => 'Төлбөр төлөлт амжилтгүй боллоо',
             'serverErrorText' => 'Серверт алдаа гарлаа. Та админтай холбогдож захиалгаа шалгуулна уу',
             'redirectUrl' => apply_filters('qplugin_payment_redirect_url', $this->get_return_url($order), $order),
+            'orderUrl' => $order->get_view_order_url(),
           )
         );
         return;
