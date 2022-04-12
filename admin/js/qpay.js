@@ -48,6 +48,24 @@
                         </div>
                       </div>`);
                     stopIntervals();
+                    setTimeout(() => {
+                      window.location = qpay_params.redirectUrl;
+                    }, 1500);
+                    break;
+                  case "processing":
+                    modal.setColumnClass("col-md-6");
+                    modal.setContent(`<div class="container">
+                        <div class="row justify-content-center">
+                          <img class="qplugin-payment-result" src="${qpay_params.success}" alt="" />
+                          <div class="position-absolute bottom-0">
+                            <p class="text-center fs-6 fw-bold text-break">${qpay_params.successText}</p>
+                          </div>
+                        </div>
+                      </div>`);
+                    stopIntervals();
+                    setTimeout(() => {
+                      window.location = qpay_params.redirectUrl;
+                    }, 1500);
                     break;
                   case "cancelled":
                     modal.setColumnClass("col-md-6");
