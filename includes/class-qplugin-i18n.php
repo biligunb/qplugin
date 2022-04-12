@@ -37,11 +37,7 @@ class Qplugin_i18n {
     load_plugin_textdomain(
       'qplugin',
       false,
-      dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
+      dirname(dirname(plugin_basename(__FILE__))) . '/languages/'
     );
-
   }
-
-
-
 }

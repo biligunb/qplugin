@@ -47,11 +47,10 @@ class Qplugin_Admin {
    * @param      string    $plugin_name       The name of this plugin.
    * @param      string    $version    The version of this plugin.
    */
-  public function __construct( $plugin_name, $version ) {
+  public function __construct($plugin_name, $version) {
 
     $this->plugin_name = $plugin_name;
     $this->version = $version;
-
   }
 
   /**
@@ -73,8 +72,7 @@ class Qplugin_Admin {
      * class.
      */
 
-    wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/qplugin-admin.css', array(), $this->version, 'all' );
-
+    wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/qplugin-admin.css', array(), $this->version, 'all');
   }
 
   /**
@@ -96,15 +94,12 @@ class Qplugin_Admin {
      * class.
      */
 
-    wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/qplugin-admin.js', array( 'jquery' ), $this->version, false );
-
+    wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/qplugin-admin.js', array('jquery'), $this->version, false);
   }
 
-  function qplugin_add_gateway_class( $gateways ) {
-    $gateways[] = include plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-qplugin-wc-payment-gateway.php';
+  function qplugin_add_gateway_class($gateways) {
+    $gateways[] = include plugin_dir_path(dirname(__FILE__)) . 'admin/class-qplugin-wc-payment-gateway.php';
 
     return $gateways;
-
   }
-
 }
