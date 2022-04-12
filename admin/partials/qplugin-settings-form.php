@@ -2,7 +2,7 @@
 $form_fields = array(
   'enabled' => array(
       'title'       => 'Enable/Disable',
-      'label'       => 'Enable QPlugin Gateway',
+      'label'       => 'Enable Qpay Gateway',
       'type'        => 'checkbox',
       'description' => '',
       'default'     => 'no'

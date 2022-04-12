@@ -1,6 +1,6 @@
 ![](qplugin.gif)
 
-# QPlugin (^_^)
+# Qpay Gateway (^_^)
 
 > WordPress plugin for `WooCommerce - Payment Gateway` using [QPay](https://qpay.mn/)
 
@@ -15,7 +15,7 @@
   - Create new site
 - Install [WooCommerce](https://woocommerce.com/) plugin & configure
   - Create product
-- Install `QPlugin` zip file
+- Install `Qpay Gateway` zip file
 - Buy product
 
 ## Running the tests

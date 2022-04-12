@@ -42,7 +42,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
       $this->id = 'qplugin'; // payment gateway plugin ID
       $this->icon = plugin_dir_url(__FILE__) . '../public/images/icons/logo_100px.png'; // URL of the icon that will be displayed on checkout page near your gateway name
       $this->has_fields = true; // in case you need a custom credit card form
-      $this->method_title = 'QPlugin Gateway';
+      $this->method_title = 'Qpay Gateway';
       $this->method_description = 'Payment using Qpay'; // will be displayed on the options page
 
       // gateways can support subscriptions, refunds, saved payment methods,
@@ -83,7 +83,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
       $this->form_fields = array(
         'enabled' => array(
           'title'       => 'Enable/Disable',
-          'label'       => 'Enable QPlugin Gateway',
+          'label'       => 'Enable Qpay Gateway',
           'type'        => 'checkbox',
           'description' => '',
           'default'     => 'no'

@@ -29,6 +29,6 @@ Following these guidelines helps to communicate that you respect the time of the
 - If possible include screenshots & debug log
 
 ## How to suggest a feature or enhancement
-> The `QPlugin` philosophy is to provide reliable WooCommerce payment gateway for Mongolian e-commerce websites using [QPay](https://qpay.mn/)
+> The `Qpay Gateway` philosophy is to provide reliable WooCommerce payment gateway for Mongolian e-commerce websites using [QPay](https://qpay.mn/)
 
 - If you have any improvement ideas please create an issue using the [Issue Template]()

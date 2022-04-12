@@ -10,10 +10,10 @@
  *
  * @link              https://unimedia.mn/
  * @since             1.0.0
- * @package           Qplugin
+ * @package           Qpay Gateway
  *
  * @wordpress-plugin
- * Plugin Name:       QPlugin
+ * Plugin Name:       Qpay Gateway
  * Plugin URI:        https://github.com/biligunb/qplugin
  * Description:       WooCommerce - Payment Gateway using QPay
  * Version:           1.0.0
