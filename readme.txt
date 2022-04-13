@@ -1,4 +1,4 @@
-=== Qpay Gateway ===
+=== Gateway for Qpay on WooCommerce ===
 Contributors: (biligunb, bayarmunkhD, BoldbaatarG, ekhishigee, moogiikat)
 Donate link: https://github.com/biligunb/qplugin
 Tags: qpay, qr code, gateway

@@ -2,7 +2,7 @@
 $form_fields = array(
   'enabled' => array(
       'title'       => 'Enable/Disable',
-      'label'       => 'Enable Qpay Gateway',
+      'label'       => 'Enable Gateway for Qpay on WooCommerce',
       'type'        => 'checkbox',
       'description' => '',
       'default'     => 'no'
