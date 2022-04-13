@@ -212,7 +212,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
       $array_with_parameters['invoice_receiver_code'] = "$customer_email"; // mail, phone -> checkout дээр авах
       $array_with_parameters['sender_invoice_no'] = "$timestamp_now"; // timestamp
       $array_with_parameters['amount'] = $order->get_total();
-      $array_with_parameters['callback_url'] = "https://magicmed.mn/wc-api/qplugin?id=$order_id";
+      $array_with_parameters['callback_url'] = site_url("wc-api/qplugin?id=$order_id");
 
       write_log("GenerateQRCode:Invoice params: ", $array_with_parameters);
 
