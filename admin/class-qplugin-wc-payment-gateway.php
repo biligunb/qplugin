@@ -196,7 +196,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
       $order = wc_get_order($order_id);
 
       // Reduce stock levels
-      $order->reduce_order_stock();
+      wc_reduce_stock_levels($order_id);
 
       // Remove cart
       $woocommerce->cart->empty_cart();
