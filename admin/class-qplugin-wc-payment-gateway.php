@@ -21,12 +21,12 @@
  * @author     Unimedia Solutions LLC engineers <hr_mongolia@unimedia.co.jp>
  */
 
-// Check write_log
-if (!function_exists('write_log')) {
+// Check qplugin_write_log
+if (!function_exists('qplugin_write_log')) {
   /**
    * Write log
    */
-  function write_log($topic, $log) {
+  function qplugin_write_log($topic, $log) {
     error_log(print_r("$topic: " . json_encode($log, JSON_PRETTY_PRINT), true));
   }
 }
@@ -70,7 +70,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
       add_action('wp_enqueue_scripts', array($this, 'payment_scripts'));
 
       // thank you page output
-      add_action('woocommerce_receipt_' . $this->id, array($this, 'generate_qr_code'), 4, 1);
+      add_action('woocommerce_receipt_' . $this->id, array($this, 'qplugin_generate_qr_code'), 4, 1);
 
       // You can also register a webhook here
       add_action('woocommerce_api_qplugin', array($this, 'webhook'));
@@ -170,7 +170,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
       // Mark as pending (we're awaiting the payment)
       $order->update_status($this->default_status);
 
-      write_log("ProcessPayment:Order", $order);
+      qplugin_write_log("ProcessPayment:Order", $order);
 
       if (!defined('WP_DEBUG')) define('WP_DEBUG', true);
       if (!defined('WP_DEBUG_LOG')) define('WP_DEBUG_LOG', true);
@@ -190,7 +190,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
      * @param WC_Order $order_id Order id.
      * @return string
      */
-    public function generate_qr_code($order_id) {
+    public function qplugin_generate_qr_code($order_id) {
       global $woocommerce;
 
       $order = wc_get_order($order_id);
@@ -214,16 +214,16 @@ if (!class_exists('WC_QPlugin_Gateway')) {
       $array_with_parameters['amount'] = $order->get_total();
       $array_with_parameters['callback_url'] = site_url("wc-api/qplugin?id=$order_id");
 
-      write_log("GenerateQRCode:Invoice params: ", $array_with_parameters);
+      qplugin_write_log("GenerateQRCode:Invoice params: ", $array_with_parameters);
 
       $args = array(
         'headers'     => array('Content-Type' => 'application/json', 'Authorization' => 'Basic ' . base64_encode($this->username . ':' . $this->password)),
         'method'      => 'POST',
         'data_format' => 'body',
       );
-      $response = wp_remote_post($this->get_auth_token_url(), $args);
+      $response = wp_remote_post($this->qplugin_get_auth_token_url(), $args);
 
-      write_log("GenerateQRCode:QPay auth response", $response);
+      qplugin_write_log("GenerateQRCode:QPay auth response", $response);
 
       $body = json_decode($response['body'], true);
       $access_token = $body['access_token'];
@@ -234,13 +234,13 @@ if (!class_exists('WC_QPlugin_Gateway')) {
         'method'      => 'POST',
         'data_format' => 'body',
       );
-      $response = wp_remote_post($this->get_create_invoice_url(), $args);
+      $response = wp_remote_post($this->qplugin_get_create_invoice_url(), $args);
 
-      write_log("GenerateQRCode:QPay create invoice response", $response);
+      qplugin_write_log("GenerateQRCode:QPay create invoice response", $response);
 
       if (!is_wp_error($response)) {
         $body = json_decode($response['body'], true);
-        write_log("GenerateQRCode:QPay create invoice body", $body);
+        qplugin_write_log("GenerateQRCode:QPay create invoice body", $body);
 
         $invoiceId = $body['invoice_id'];
         $qrcode = $body['qr_image'];
@@ -258,7 +258,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
           'qpay_params',
           array(
             'icon' => plugin_dir_url(__FILE__) . '../public/images/icons/qpay logo.svg',
-            'url' => admin_url() . "admin-ajax.php?action=fetch_order_status&order_id=" . $order_id,
+            'url' => admin_url() . "admin-ajax.php?action=qplugin_fetch_order_status&order_id=" . $order_id,
             'deeplink' => $deeplink,
             'deeplinkText' => 'Банкны апп ашиглах',
             'orderId' => $order_id,
@@ -294,10 +294,10 @@ if (!class_exists('WC_QPlugin_Gateway')) {
         'method'      => 'POST',
         'data_format' => 'body',
       );
-      $response = wp_remote_post($this->get_auth_token_url(), $args);
+      $response = wp_remote_post($this->qplugin_get_auth_token_url(), $args);
       $body = json_decode($response['body'], true);
       $access_token = $body['access_token'];
-      write_log("Webhook:QPay auth response", $response);
+      qplugin_write_log("Webhook:QPay auth response", $response);
 
 
       $args2 = array(
@@ -305,10 +305,10 @@ if (!class_exists('WC_QPlugin_Gateway')) {
         'method'      => 'GET',
         'data_format' => 'body',
       );
-      $response2 = wp_remote_post($this->get_payment_url($_GET['qpay_payment_id']), $args2);
-      write_log("Webhook:QPay payment response", $response2);
+      $response2 = wp_remote_post($this->qplugin_get_payment_url($_GET['qpay_payment_id']), $args2);
+      qplugin_write_log("Webhook:QPay payment response", $response2);
       $body = json_decode($response2['body'], true);
-      write_log("Webhook:QPay object_id", $body['object_id']);
+      qplugin_write_log("Webhook:QPay object_id", $body['object_id']);
 
       $array_with_parameters->object_type = 'INVOICE';
       $array_with_parameters->object_id = $body['object_id'];
@@ -319,8 +319,8 @@ if (!class_exists('WC_QPlugin_Gateway')) {
         'method'      => 'POST',
         'data_format' => 'body',
       );
-      $response2 = wp_remote_post($this->get_check_payment_url(), $args2);
-      write_log("Webhook:QPay check payment response", $response2);
+      $response2 = wp_remote_post($this->qplugin_get_check_payment_url(), $args2);
+      qplugin_write_log("Webhook:QPay check payment response", $response2);
 
       $body = json_decode($response2['body'], true);
       $payment_status = $body['rows'][0]['payment_status'];
@@ -329,7 +329,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
       // If payment status = PAID & paymentId = qpay_payment_id
       if ($payment_status == 'PAID' && $payment_id == $_GET['qpay_payment_id']) {
         $order->payment_complete();
-        write_log('Webhook:Order', $order);
+        qplugin_write_log('Webhook:Order', $order);
       }
 
       update_option('webhook_debug', $_GET);
@@ -340,7 +340,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
      *
      * @return string.
      */
-    protected function get_auth_token_url() {
+    protected function qplugin_get_auth_token_url() {
       return 'https://merchant.qpay.mn/v2/auth/token';
     }
 
@@ -349,7 +349,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
      *
      * @return string.
      */
-    protected function get_create_invoice_url() {
+    protected function qplugin_get_create_invoice_url() {
       return 'https://merchant.qpay.mn/v2/invoice';
     }
 
@@ -358,7 +358,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
      *
      * @return string.
      */
-    protected function get_payment_url($qpay_payment_id) {
+    protected function qplugin_get_payment_url($qpay_payment_id) {
       return "https://merchant.qpay.mn/v2/payment/$qpay_payment_id";
     }
 
@@ -367,7 +367,7 @@ if (!class_exists('WC_QPlugin_Gateway')) {
      *
      * @return string.
      */
-    protected function get_check_payment_url() {
+    protected function qplugin_get_check_payment_url() {
       return 'https://merchant.qpay.mn/v2/payment/check';
     }
   }
