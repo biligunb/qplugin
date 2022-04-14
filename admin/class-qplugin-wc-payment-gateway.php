@@ -205,13 +205,14 @@ if (!class_exists('WC_QPlugin_Gateway')) {
       $invoice_due_date = date('Y-m-d H:i:s', strtotime('+2 minutes'));
       $customer_email = $order->get_billing_email();
 
-      $array_with_parameters->invoice_code = "$this->invoice_code"; // тохиргооноос авах
-      $array_with_parameters->invoice_due_date = "$invoice_due_date";
-      $array_with_parameters->invoice_description = "$order_id";
-      $array_with_parameters->invoice_receiver_code = "$customer_email"; // mail, phone -> checkout дээр авах
-      $array_with_parameters->sender_invoice_no = "$timestamp_now"; // timestamp
-      $array_with_parameters->amount = $order->get_total();
-      $array_with_parameters->callback_url = site_url("wc-api/qplugin?id=$order_id");
+      $array_with_parameters = [];
+      $array_with_parameters['invoice_code'] = "$this->invoice_code"; // тохиргооноос авах
+      $array_with_parameters['invoice_due_date'] = "$invoice_due_date";
+      $array_with_parameters['invoice_description'] = "$order_id";
+      $array_with_parameters['invoice_receiver_code'] = "$customer_email"; // mail, phone -> checkout дээр авах
+      $array_with_parameters['sender_invoice_no'] = "$timestamp_now"; // timestamp
+      $array_with_parameters['amount'] = $order->get_total();
+      $array_with_parameters['callback_url'] = site_url("wc-api/qplugin?id=$order_id");
 
       write_log("GenerateQRCode:Invoice params: ", $array_with_parameters);
 
