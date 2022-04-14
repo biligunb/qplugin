@@ -86,6 +86,7 @@ function qplugin_fetch_order_status() {
     'orderId' => $order_data['id'],
     'status' => $order_data['status'],
   ]);
+  echo "" . esc_attr($order_data['status']) . "";
   die();
 }
 
@@ -104,8 +105,8 @@ function run_qplugin() {
   $plugin->run();
 
   // custom ajax api here
-  add_action('wp_ajax_nopriv_fetch_order_status', 'qplugin_fetch_order_status');
-  add_action('wp_ajax_fetch_order_status', 'qplugin_fetch_order_status');
+  add_action('wp_ajax_nopriv_qplugin_fetch_order_status', 'qplugin_fetch_order_status');
+  add_action('wp_ajax_qplugin_fetch_order_status', 'qplugin_fetch_order_status');
 }
 
 run_qplugin();
