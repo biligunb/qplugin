@@ -33,102 +33,97 @@
         startTime--;
         if (!orderCheckInterval) {
           orderCheckInterval = setInterval(async () => {
-            if (startTime > 0) {
-              try {
-                const response = await checkOrderStatus();
-                switch (response) {
-                  case "completed":
-                    modal.setColumnClass("col-md-6");
-                    modal.setContent(`<div class="container">
-                        <div class="row justify-content-center">
-                          <img class="qplugin-payment-result" src="${qpay_params.success}" alt="" />
-                          <div class="position-absolute bottom-0">
-                            <p class="text-center fs-6 fw-bold text-break">${qpay_params.successText}</p>
-                          </div>
+            try {
+              const response = await checkOrderStatus();
+              switch (response) {
+                case "completed":
+                  stopIntervals();
+                  modal.setColumnClass("col-md-6");
+                  modal.setContent(`<div class="container">
+                      <div class="row justify-content-center">
+                        <img class="qplugin-payment-result" src="${qpay_params.success}" alt="" />
+                        <div class="position-absolute bottom-0">
+                          <p class="text-center fs-6 fw-bold text-break">${qpay_params.successText}</p>
                         </div>
-                      </div>`);
-                    stopIntervals();
-                    setTimeout(() => {
-                      window.location = qpay_params.redirectUrl;
-                    }, 4500);
-                    break;
-                  case "processing":
-                    modal.setColumnClass("col-md-6");
-                    modal.setContent(`<div class="container">
-                        <div class="row justify-content-center">
-                          <img class="qplugin-payment-result" src="${qpay_params.success}" alt="" />
-                          <div class="position-absolute bottom-0">
-                            <p class="text-center fs-6 fw-bold text-break">${qpay_params.successText}</p>
-                          </div>
-                        </div>
-                      </div>`);
-                    stopIntervals();
-                    setTimeout(() => {
-                      window.location = qpay_params.redirectUrl;
-                    }, 4500);
-                    break;
-                  case "cancelled":
-                    modal.setColumnClass("col-md-6");
-                    modal.setContent(`<div class="container">
-                        <div class="row justify-content-center">
-                          <img class="qplugin-payment-result" src="${qpay_params.failure}" alt="" />
-                          <div class="position-absolute bottom-0">
-                            <p class="text-center fs-6 fw-bold text-break">${qpay_params.cancelledText}</p>
-                          </div>
-                        </div>
-                      </div>`);
-                    stopIntervals();
-                    setTimeout(() => {
-                      window.location = qpay_params.orderUrl;
-                    }, 4500);
-                    break;
-                  case "failed":
-                    modal.setColumnClass("col-md-6");
-                    modal.setContent(`<div class="container">
-                        <div class="row justify-content-center">
-                          <img class="qplugin-payment-result" src="${qpay_params.failure}" alt="" />
-                          <div class="position-absolute bottom-0">
-                            <p class="text-center fs-6 fw-bold text-break">${qpay_params.failedText}</p>
-                          </div>
-                        </div>
-                      </div>`);
-                    stopIntervals();
-                    setTimeout(() => {
-                      window.location = qpay_params.orderUrl;
-                    }, 4500);
-                    break;
-                  default:
-                    break;
-                }
-              } catch (error) {
-                modal.setColumnClass("col-md-6");
-                modal.setContent(`<div class="container">
-                    <div class="row justify-content-center">
-                      <img class="qplugin-payment-result" src="${qpay_params.failure}" alt="" />
-                      <div class="position-absolute bottom-0">
-                        <p class="text-center fs-6 fw-bold text-break">${qpay_params.serverErrorText}</p>
                       </div>
-                    </div>
-                  </div>`);
-                stopIntervals();
+                    </div>`);
+                  setTimeout(() => {
+                    window.location = qpay_params.redirectUrl;
+                  }, 4500);
+                  break;
+                case "processing":
+                  stopIntervals();
+                  modal.setColumnClass("col-md-6");
+                  modal.setContent(`<div class="container">
+                      <div class="row justify-content-center">
+                        <img class="qplugin-payment-result" src="${qpay_params.success}" alt="" />
+                        <div class="position-absolute bottom-0">
+                          <p class="text-center fs-6 fw-bold text-break">${qpay_params.successText}</p>
+                        </div>
+                      </div>
+                    </div>`);
+                  setTimeout(() => {
+                    window.location = qpay_params.redirectUrl;
+                  }, 4500);
+                  break;
+                case "cancelled":
+                  stopIntervals();
+                  modal.setColumnClass("col-md-6");
+                  modal.setContent(`<div class="container">
+                      <div class="row justify-content-center">
+                        <img class="qplugin-payment-result" src="${qpay_params.failure}" alt="" />
+                        <div class="position-absolute bottom-0">
+                          <p class="text-center fs-6 fw-bold text-break">${qpay_params.cancelledText}</p>
+                        </div>
+                      </div>
+                    </div>`);
+                  setTimeout(() => {
+                    window.location = qpay_params.orderUrl;
+                  }, 4500);
+                  break;
+                case "failed":
+                  stopIntervals();
+                  modal.setColumnClass("col-md-6");
+                  modal.setContent(`<div class="container">
+                      <div class="row justify-content-center">
+                        <img class="qplugin-payment-result" src="${qpay_params.failure}" alt="" />
+                        <div class="position-absolute bottom-0">
+                          <p class="text-center fs-6 fw-bold text-break">${qpay_params.failedText}</p>
+                        </div>
+                      </div>
+                    </div>`);
+                  setTimeout(() => {
+                    window.location = qpay_params.orderUrl;
+                  }, 4500);
+                  break;
+                default:
+                  break;
               }
-            } else {
+            } catch (error) {
+              stopIntervals();
               modal.setColumnClass("col-md-6");
               modal.setContent(`<div class="container">
                   <div class="row justify-content-center">
                     <img class="qplugin-payment-result" src="${qpay_params.failure}" alt="" />
                     <div class="position-absolute bottom-0">
-                      <p class="text-center fs-6 fw-bold text-break">${qpay_params.expiredText}</p>
+                      <p class="text-center fs-6 fw-bold text-break">${qpay_params.serverErrorText}</p>
                     </div>
                   </div>
                 </div>`);
-              stopIntervals();
             }
           }, 3000);
         }
-      }
-      if (startTime < 0) {
+      } else {
         stopIntervals();
+        modal.setColumnClass("col-md-6");
+        modal.setContent(`<div class="container">
+            <div class="row justify-content-center">
+              <img class="qplugin-payment-result" src="${qpay_params.failure}" alt="" />
+              <div class="position-absolute bottom-0">
+                <p class="text-center fs-6 fw-bold text-break">${qpay_params.expiredText}</p>
+              </div>
+            </div>
+          </div>`);
       }
     }, 1000);
   };
